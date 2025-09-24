@@ -65,7 +65,7 @@ quiz_submission8 = {
     "quiz_name": "Supply and Demand",
     "quiz_module": "Economics",
     "quiz_score": "83",
-    "studend_id": "100",
+    "student_id": "100",
     "student_name": "Jessica Alba",
     "submission_date": "9-23-2025",
 }
@@ -141,7 +141,7 @@ submissions = [
         "quiz_name": "Supply and Demand",
         "quiz_module": "Economics",
         "quiz_score": "83",
-        "studend_id": "100",
+        "student_id": "100",
         "student_name": "Jessica Alba",
         "submission_date": "9-23-2025",
     },
@@ -157,49 +157,74 @@ submissions = [
 
 
 def filter_by_date(submissions, date):
-    filtered_submissions = []
-    for submission in submissions:
-        if submission["submission_date"] == date:
-            filtered_submissions.append(submission)
-    return filtered_submissions
+    return [
+        submissions
+        for submissions in submissions
+        if submissions["submission_date"] == date
+    ]
 
 
 def filter_by_student_id(submissions, student_id):
     return [
         submissions
         for submissions in submissions
-        if submissions.get("studentId") == student_id
+        if submissions.get("student_id") == student_id
     ]
 
 
+all_quizzes = ["Fruit Transition", "Calculating Fractions", "Supply and Demand"]
+
+
 def find_unsubmitted_quizzes(submissions, student_id):
-    unsubmitted_quizzes = []
-    for submission in submissions:
-        if submission["student_id"] == student_id:
-            unsubmitted_quizzes.append(submission["quiz_name"])
-    return unsubmitted_quizzes
+
+    submitted = [
+        submissions["quiz_name"]
+        for submissions in submissions
+        if submissions.get("student_id") == student_id
+    ]
+
+    unsubmitted = [quiz for quiz in all_quizzes if quiz not in submitted]
+    return unsubmitted
 
 
 def get_average_score(submissions):
-    total = sum(submission["quiz_score"] for submission in submissions)
-    return total / len(submissions)
+    scores = [
+        int(submissions["quiz_score"])
+        for submissions in submissions
+        if "quiz_score" in submissions
+    ]
+    return sum(scores) / len(scores) if scores else 0
 
 
 def get_average_score_by_module(submissions, module):
-    filtered_submissions = sum(submissions, module)
-    total = sum(submission["quiz_score"] for submission in filtered_submissions)
-    return total / len(filtered_submissions)
+    scores = [
+        int(submissions["quiz_score"])
+        for submissions in submissions
+        if submissions["quiz_module"] == module
+    ]
+    return sum(scores) / len(scores) if scores else 0
 
 
 print(submissions)
-date_filtered = filter_by_date(submissions, "9-22-2025")
-date_filtered = filter_by_date(submissions, "9-23-2025")
-print(date_filtered, "9-22-2025")
-print(date_filtered, "9-23-2025")
-id_filtered = filter_by_student_id(submissions, "100")
-print(id_filtered, "Jessica Alba")
-unsubmitted_quiz = find_unsubmitted_quizzes(submissions)
-print(unsubmitted_quiz)
-print(find_unsubmitted_quizzes)
-print(get_average_score)
-print(get_average_score_by_module)
+
+print(filter_by_date(submissions, "9-22-2025"))
+print(filter_by_date(submissions, "9-23-2025"))
+print(filter_by_student_id(submissions, "100"))
+print(filter_by_student_id(submissions, "101"))
+print(filter_by_student_id(submissions, "102"))
+print(find_unsubmitted_quizzes(submissions, "100"))
+print(find_unsubmitted_quizzes(submissions, "101"))
+print(find_unsubmitted_quizzes(submissions, "102"))
+print("The average score of all quizzes are", get_average_score(submissions))
+print(
+    "The average score of Algebra scores are",
+    get_average_score_by_module(submissions, "Algebra"),
+)
+print(
+    "The average score of Art scores are",
+    get_average_score_by_module(submissions, "Art"),
+)
+print(
+    "The average score of Economics scores are",
+    get_average_score_by_module(submissions, "Economics"),
+)
